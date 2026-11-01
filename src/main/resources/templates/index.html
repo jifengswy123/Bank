@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>账户总览</title>
+    <style>
+        body { font-family: system-ui, sans-serif; margin: 40px; }
+        table { border-collapse: collapse; margin-top: 16px; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px 16px; text-align: left; }
+        th { background: #f5f5f5; }
+        .search { margin: 16px 0; }
+        .search input, .search select, .search button { padding: 6px 10px; margin-right: 8px; }
+
+        .pager { margin-top: 20px; display: flex; align-items: center; gap: 12px; }
+        .btn { display: inline-block; padding: 6px 16px; border: 1px solid #ccc;
+            border-radius: 4px; text-decoration: none; color: #333; background: #fff; }
+        .btn:hover { background: #f0f0f0; }
+        /* 到头/到底时按钮变灰且不可点 */
+        .disabled { color: #aaa; background: #f7f7f7; cursor: not-allowed; border-color: #eee; }
+        .info { color: #666; }
+    </style>
+</head>
+<body>
+<h1 th:text="${msg}">占位</h1>
+
+<!-- 搜索区：GET 提交，不传 pageNum，所以搜索后自动回到第 1 页 -->
+<form class="search" method="get" action="/">
+    <input type="text" name="keyword" th:value="${keyword}" placeholder="账户号或姓名">
+    <select name="status">
+        <option value="">全部状态</option>
+        <option value="NORMAL" th:selected="${status == 'NORMAL'}">NORMAL</option>
+        <option value="FROZEN" th:selected="${status == 'FROZEN'}">FROZEN</option>
+    </select>
+    <button type="submit">搜索</button>
+</form>
+
+<table>
+    <thead>
+    <tr><th>ID</th><th>账户号</th><th>持有人</th><th>余额</th><th>状态</th><th>创建时间</th></tr>
+    </thead>
+    <tbody>
+    <!-- 从pageInfo.list取值 -->
+    <tr th:each="a : ${pageInfo.list}">
+        <td th:text="${a.id}"></td>
+        <td th:text="${a.accountNo}"></td>
+        <td th:text="${a.holderName}"></td>
+        <td th:text="${a.balance}"></td>
+        <td th:text="${a.status}"></td>
+        <td th:text="${a.createTime}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- 分页按钮 -->
+<div class="pager">
+    <a th:if="${pageInfo.hasPreviousPage}" class="btn"
+       th:href="@{/(pageNum=${pageInfo.pageNum - 1}, pageSize=${pageInfo.pageSize}, keyword=${keyword}, status=${status})}">上一页</a>
+    <span th:unless="${pageInfo.hasPreviousPage}" class="btn disabled">上一页</span>
+
+    <span class="info">
+            第 <b th:text="${pageInfo.pageNum}"></b> / <b th:text="${pageInfo.pages}"></b> 页
+            ｜ 共 <b th:text="${pageInfo.total}"></b> 条
+        </span>
+    <!-- keyword和status千万不能忘，翻页会触发新的请求。如果不带上它们，翻页时就会触发不带这两个约束的SQL，导致查询失效 -->
+    <a th:if="${pageInfo.hasNextPage}" class="btn"
+       th:href="@{/(pageNum=${pageInfo.pageNum + 1}, pageSize=${pageInfo.pageSize}, keyword=${keyword}, status=${status})}">下一页</a>
+    <span th:unless="${pageInfo.hasNextPage}" class="btn disabled">下一页</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.finance.mapper.AccountMapper">
+    <!-- 将数据表t_account中的字段映射成Java 属性 -->
+    <resultMap id="accountMap" type="com.example.finance.entity.Account">
+        <id     column="id"          property="id"/>
+        <result column="account_no"  property="accountNo"/>
+        <result column="holder_name" property="holderName"/>
+        <result column="balance"     property="balance"/>
+        <result column="status"      property="status"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <!-- 经常复用的字段使用<sql id>定义成一个可<include>的模板 -->
+    <sql id="baseColumns">
+        id, account_no, holder_name, balance, status, create_time
+    </sql>
+
+    <!-- 查询t_account表全部值并排序 -->
+    <select id="findAll" resultMap="accountMap">
+        SELECT <include refid="baseColumns"/>
+        FROM t_account
+        ORDER BY id
+    </select>
+
+    <!-- 按id查t_account表的值 -->
+    <select id="findById" resultMap="accountMap">
+        SELECT <include refid="baseColumns"/>
+        FROM t_account
+        <!--在最终SQL中，#{id}的位置会被替换成一个？，数据库在收到带？的SQL时，已经把这条SQL的结构编译好了，后续传进来的值无论内容是什么，都只会当成字符串或者数字处理，
+         不会被解析成新的SQL语法-->
+        WHERE id = #{id}
+    </select>
+
+    <!-- 按id查t_account表的值 -->
+    <select id="search" resultMap="accountMap">
+        SELECT <include refid="baseColumns"/>
+        FROM t_account
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (account_no   LIKE CONCAT('%', #{keyword}, '%')
+                OR holder_name  LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+        </where>
+        ORDER BY id
+    </select>
+
+    <!-- 注册新用户到t_account -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_account (account_no, holder_name, balance, status, create_time)
+        VALUES (#{accountNo}, #{holderName}, #{balance}, #{status}, NOW())
+    </insert>
+
+    <!-- 更新用户信息到t_account -->
+    <update id="update">
+        UPDATE t_account
+        <set>
+            <if test="holderName != null and holderName != ''">holder_name = #{holderName},</if>
+            <if test="balance != null">                        balance     = #{balance},</if>
+            <if test="status != null and status != ''">        status      = #{status},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 余额增减，amount传负数即为扣减 -->
+    <update id="addBalance">
+        UPDATE t_account
+        SET balance = balance + #{delta}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 通过删除用户 -->
+    <delete id="deleteById">
+        DELETE FROM t_account WHERE id = #{id}
+    </delete>
+
+</mapper>
