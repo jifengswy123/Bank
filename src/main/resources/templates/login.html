@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>登录 - 账户系统</title>
+</head>
+<body>
+<div class="box">
+    <h2>账户系统登录</h2>
+
+    <!-- ★ 必须用 th:action，不能用原生 action —— 原因见 10.2 -->
+    <form method="post" th:action="@{/login}">
+        <input type="text"     name="username" placeholder="用户名" autofocus>
+        <input type="password" name="password" placeholder="密码">
+        <button type="submit">登录</button>
+    </form>
+
+    <p th:if="${param.error}">用户名或密码错误，请重试</p>
+    <p th:if="${param.logout}">已安全退出</p>
+
+    <p style="color:#888;font-size:13px;margin-top:20px;">
+        测试账号：admin / admin123（管理员）　teller / teller123（柜员）
+    </p>
+</div>
+</body>
+</html>

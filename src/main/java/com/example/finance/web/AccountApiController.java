@@ -8,6 +8,9 @@ import com.github.pagehelper.PageInfo;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +20,7 @@ import java.util.Map;
 @RequestMapping("/api/accounts")
 public class AccountApiController {
 
+    private static final Logger log = LoggerFactory.getLogger(AccountApiController.class);
     private final AccountService accountService;
 
     public AccountApiController(AccountService accountService) {
@@ -54,6 +58,7 @@ public class AccountApiController {
     //只加@RequestBody不加@Valid不会触发校验
     //非法参数在进入Service前就被拦下了
     public R<Void> transfer(@RequestBody @Valid TransferRequest req) {
+        log.info("开始进入转账功能");
         accountService.transfer(req.getFromId(), req.getToId(), req.getAmount());
         return R.ok();
     }

@@ -2,14 +2,21 @@ package com.example.finance.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 //POJO
 public class Account {
+
+    private static final Logger log = LoggerFactory.getLogger(Account.class);
+
     private Long id;
     private String accountNo;
     private String holderName;
     private BigDecimal balance;
     private String status;
+    private LocalDateTime createTime;
+    private Integer version;
 
     public Long getId() {
         return id;
@@ -59,5 +66,11 @@ public class Account {
         this.createTime = createTime;
     }
 
-    private LocalDateTime createTime;
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
 }

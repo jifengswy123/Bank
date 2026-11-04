@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.finance.mapper.AccountMapper">
-    <!-- 将数据表t_account中的字段映射成Java 属性 -->
+    <!-- 将数据表t_account中的字段映射成Java属性 -->
     <resultMap id="accountMap" type="com.example.finance.entity.Account">
         <id     column="id"          property="id"/>
         <result column="account_no"  property="accountNo"/>
@@ -11,11 +11,13 @@
         <result column="balance"     property="balance"/>
         <result column="status"      property="status"/>
         <result column="create_time" property="createTime"/>
+        <!--乐观锁版本号-->
+        <result column="version"     property="version"/>
     </resultMap>
 
     <!-- 经常复用的字段使用<sql id>定义成一个可<include>的模板 -->
     <sql id="baseColumns">
-        id, account_no, holder_name, balance, status, create_time
+        id, account_no, holder_name, balance, status, create_time, version
     </sql>
 
     <!-- 查询t_account表全部值并排序 -->
@@ -65,6 +67,15 @@
             <if test="status != null and status != ''">        status      = #{status},</if>
         </set>
         WHERE id = #{id}
+    </update>
+
+    <update id="updateWithVersion">
+        UPDATE t_account
+        SET holder_name = #{holderName},
+            balance     = #{balance},
+            status      = #{status},
+            version     = version + 1
+        WHERE id = #{id} AND version = #{version}
     </update>
 
     <!-- 余额增减，amount传负数即为扣减 -->

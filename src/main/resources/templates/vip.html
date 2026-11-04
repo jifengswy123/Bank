@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>管理员专区</title>
+</head>
+<body>
+<div class="topbar">
+    <span>当前登录：<b th:text="${username}"></b></span>
+    <form method="post" th:action="@{/logout}">
+        <button type="submit" class="logout">退出登录</button>
+    </form>
+</div>
+
+<h1>🔒 管理员专区</h1>
+<div class="card">
+    <p>欢迎回来，<b th:text="${username}"></b>。</p>
+    <p>这里是仅 <code>ROLE_ADMIN</code> 可见的页面。柜员访问会被拒绝（403）。</p>
+</div>
+</body>
+</html>

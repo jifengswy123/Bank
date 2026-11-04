@@ -1,6 +1,12 @@
 package com.example.finance.common;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class R<T> {
+
+    private static final Logger log = LoggerFactory.getLogger(R.class);
+
     private int code;        // 200=成功，其他=失败
     private String message;  // 提示信息
     private T data;          // 业务数据
